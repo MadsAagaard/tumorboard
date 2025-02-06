@@ -103,134 +103,13 @@ def helpMessage() {
 if (params.help) exit 0, helpMessage()
 
 
-/*
-switch (params.gatk) {
 
-    case 'danak':
-    gatk_image="gatk419.sif";
-    break;
-    case 'new':
-    gatk_image="gatk4400.sif";
-    break;
-    case 'latest':
-    gatk_image="gatk4500.sif";
-    default:
-    gatk_image="gatk4400.sif";
-    break;
-}
-
-
-switch (params.server) {
-    case 'lnx01':
-        s_bind="/data/:/data/,/lnx01_data2/:/lnx01_data2/";
-        simgpath="/data/shared/programmer/simg";
-        params.intervals_list="/data/shared/genomes/hg38/interval.files/WGS_splitIntervals/wgs_splitinterval_BWI_subdivision3/*.interval_list";
-        tmpDIR="/data/TMP/TMP.${user}/";
-        gatk_exec="singularity run -B ${s_bind} ${simgpath}/${gatk_image} gatk";
-        multiqc_config="/data/shared/programmer/configfiles/multiqc_config.yaml"
-    break;
-    default:
-        s_bind="/data/:/data/,/lnx01_data2/:/lnx01_data2/,/fast/:/fast/,/lnx01_data3/:/lnx01_data3/,/lnx01_data4/:/lnx01_data4/";
-        simgpath="/data/shared/programmer/simg";
-        params.intervals_list="/data/shared/genomes/hg38/interval.files/WGS_splitIntervals/wgs_splitinterval_BWI_subdivision3/*.interval_list";
-        tmpDIR="/fast/TMP/TMP.${user}/";
-        gatk_exec="singularity run -B ${s_bind} ${simgpath}/${gatk_image} gatk";
-        multiqc_config="/data/shared/programmer/configfiles/multiqc_config.yaml"
-    break;
-}
-
-switch (params.genome) {
-    case 'hg19':
-        assembly="hg19"
-        // Genome assembly files:
-        genome_fasta = "/data/shared/genomes/hg19/human_g1k_v37.fasta"
-        genome_fasta_fai = "/data/shared/genomes/hg19/human_g1k_v37.fasta.fai"
-        genome_fasta_dict = "/data/shared/genomes/hg19/human_g1k_v37.dict"
-        genome_version="V1"
-        break;
-
-
-    case 'hg38':
-        assembly="hg38"
-        smncaller_assembly="38"
-        pcgr_assembly="grch38"
-        // Genome assembly files:
-        if (params.hg38v1) {
-            genome_fasta = "/data/shared/genomes/hg38/GRCh38.primary.fa"
-            genome_fasta_fai = "/data/shared/genomes/hg38/GRCh38.primary.fa.fai"
-            genome_fasta_dict = "/data/shared/genomes/hg38/GRCh38.primary.dict"
-            genome_version="hg38v1"
-            cnvkit_germline_reference_PON="/data/shared/genomes/hg38/inhouse_DBs/hg38v1_primary/cnvkit/wgs_germline_PON/jgmr_45samples.reference.cnn"
-            cnvkit_inhouse_cnn_dir="/data/shared/genomes/hg38/inhouse_DBs/hg38v1_primary/cnvkit/wgs_persample_cnn/"
-            inhouse_SV="/data/shared/genomes/hg38/inhouse_DBs/hg38v1_primary/"
-        }
-        
-        if (params.hg38v2){
-            genome_fasta = "/data/shared/genomes/hg38/ucsc.hg38.NGS.analysisSet.fa"
-            genome_fasta_fai = "/data/shared/genomes/hg38/ucsc.hg38.NGS.analysisSet.fa.fai"
-            genome_fasta_dict = "/data/shared/genomes/hg38/ucsc.hg38.NGS.analysisSet.dict"
-            genome_version="hg38v2"
-        }
-
-        // Current hg38 version (v3): NGC with masks and decoys.
-        if (!params.hg38v2 && !params.hg38v1){
-        genome_fasta = "/data/shared/genomes/hg38/GRCh38_masked_v2_decoy_exclude.fa"
-        genome_fasta_fai = "/data/shared/genomes/hg38/GRCh38_masked_v2_decoy_exclude.fa.fai"
-        genome_fasta_dict = "/data/shared/genomes/hg38/GRCh38_masked_v2_decoy_exclude.dict"
-        genome_version="hg38v3"
-        cnvkit_germline_reference_PON="/data/shared/genomes/hg38/inhouse_DBs/hg38v3_primary/cnvkit/hg38v3_109samples.cnvkit.reference.cnn"
-        cnvkit_inhouse_cnn_dir="/data/shared/genomes/hg38/inhouse_DBs/hg38v3_primary/cnvkit/wgs_persample_cnn/"
-        inhouse_SV="/data/shared//genomes/hg38/inhouse_DBs/hg38v3_primary/"
-        }
-
-        // Program files and resources:
-        msisensor_list="/data/shared/genomes/hg38/program_DBs/msisensor/hg38v3_msisensor_scan.txt"
-     
-        gatk_wgs_pon="/data/shared/genomes/hg38/program_DBs/GATK/somatic/somatic-hg38_1000g_pon.hg38.vcf.gz"
-        mutect_gnomad="/data/shared/genomes/hg38/program_DBs/GATK/somatic/somatic-hg38_af-only-gnomad.hg38.vcf.gz"
-        gatk_contamination_ref="/data/shared/genomes/hg38/program_DBs/GATK/somatic/somatic-hg38_small_exac_common_3.hg38.vcf.gz"
-
-        pcgr_data_dir="/data/shared/genomes/hg38/program_DBs/PCGR/"
-        pcgr_VEP="/data/shared/genomes/hg38/program_DBs/PCGRv2/VEP_112_GRCh38_merged/"
-        pcgr_data_dir3="/data/shared/genomes/hg38/program_DBs/PCGRv2/20240927/"
-        hmftools_data_dir_v534="/data/shared/genomes/hg38/program_DBs/hmftools/v5_34/ref/38"
-        hmftools_data_dir_v60="/data/shared/genomes/hg38/program_DBs/hmftools/v6_0/ref/38"
-        sequenza_cg50_wig="/data/shared/genomes/hg38/program_DBs/sequenza/GRCh38.primary.cg50.sequenza.wig.gz"
-
-        // Regions & variants:
-        qualimap_ROI="/data/shared/genomes/hg38/interval.files/210129.hg38.gencode36.codingexons.20bp.SM.6col.bed"
-        gencode_exons_ROI="/data/shared/genomes/hg38/interval.files/210129.hg38.gencode36.codingexons.SM.bed"
-
-        ROI="/data/shared/genomes/hg38/interval.files/exome.ROIs/211130.hg38.refseq.gencode.fullexons.50bp.SM.bed"
-        
-        inhouse127_geneIntervals="/data/shared/genomes/hg38/interval.files/geneIntervals/241022_inhouse127genes.3col.SM.bed"
-
-
-        callable_regions="/data/shared/genomes/hg38/interval.files/GATK.hg38.callable.regions.bed"
-        manta_callable_regions="/data/shared/genomes/hg38/interval.files/manta/GATK.hg38.callable.regions.bed.gz"
-
-        break;
-}
-
-
-outputDir="TN_WGS_results"
-*/
 ///////////////////////// SAMPLESHEET CHANNELS /////////////////////
 
 // Samplesheet cols (fixed order)
-// 0: CaseID, 1: WES.blood, 2: WES.tumor, 3: RNA tumor, 4: pcgr_tumor_code
+// 0: CaseID, 1: NPN DNA blood, 2: NPN DNA Tumor, 3: NPN RNA tumor, 4: pcgr_tumor_code
 
 ////////////////////////////////////////////////////////////////////////////////
-
-
-/* To do:
- - cram symlinks fuull samplename so varseq recognizes the sample
- - purple segments rename to meta.id
- - purple output to tumorboradfiles folder.
-
-*/
-
-
 
 
 //////////// DEFAULT INPUT ///////////////////////
@@ -374,25 +253,6 @@ if (params.samplesheet && params.default) {
 
 }
 
-/*
-include {inputFiles_symlinks_cram;
-        inputFiles_symlinks_fastq;
-        pcgr_v212_mutect2
-        } from "./modules/dnaModules.nf" 
-
-
-include {DNA_STANDARD;
-         DNA_WGS
-         } from "./subworkflows/dnaSubworkflows.nf" 
-
-
-include {RNA_PREPROCESS;
-         RNA_EXPRESSION;
-         RNA_SPLICING;
-         RNA_FUSION;
-         RNA_QC
-        } from "./subworkflows/rnaSubworkflows.nf" 
-*/
 
 include {inputFiles_symlinks_cram;
         inputFiles_symlinks_fastq;
@@ -415,8 +275,7 @@ include {DNA_PREPROCESS;
 
 
 workflow {
-     /*
-         */
+
     if (!params.skipDNA) {
         if(params.default) {
             inputFiles_symlinks_cram(dnaInputCRAM)
@@ -487,7 +346,7 @@ workflow {
         */
     }
 
-    // If default run (e.g. nothing skipped), run this after certain RNA and DNA processes complete:
+    // If default run (i.e. nothing skipped), run this after certain RNA and DNA processes complete:
     if (!params.skipRNA && !params.skipDNA && !params.skipExpression) {
         
         DNA_STANDARD.out.mutect2_tumorPASS
