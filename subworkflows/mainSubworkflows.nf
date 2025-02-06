@@ -90,7 +90,7 @@ workflow DNA_QC {
     qualimap.out.multiqc.ifEmpty([]).mix(mosdepth.out.multiqc.ifEmpty([]))
     |groupTuple
     |set {multiqcInput}
-    multiqcInput.view()
+
     multiQC(multiqcInput)
 
 
@@ -101,26 +101,6 @@ workflow DNA_QC {
 
 
 }
-/*
-workflow DNA_QC {
-
-    take: 
-    dnaInputCRAM_single
-    main:
-    qualimap(dnaInputCRAM_single)
-    collectWGSmetrics(dnaInputCRAM_single)
-    bamtools(dnaInputCRAM_single)
-    mosdepth(dnaInputCRAM_single)
-
-    collectWGSmetrics.out.multiqc.ifEmpty([]).mix(qualimap.out.multiqc.ifEmpty([])).mix(mosdepth.out.multiqc.ifEmpty([])).mix(bamtools.out.multiqc.ifEmpty([])).collect()
-    |set {multiqcInput}
-    multiqcInput.view()
-
-    multiQC(multiqcInput)
-}
-*/
-
-
 
 workflow DNA_STANDARD {
 
